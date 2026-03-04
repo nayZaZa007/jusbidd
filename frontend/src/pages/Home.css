@@ -1,0 +1,33 @@
+.home-container {
+  padding: 40px;
+  background: #c9d6e4;
+  min-height: 100vh;
+}
+
+.home-title {
+  text-align: center;
+  font-size: 48px;
+  color: #1f3e6e;
+  margin-bottom: 30px;
+}
+
+.categories {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.categories button {
+  padding: 8px 20px;
+  border-radius: 8px;
+  border: 1px solid #1f3e6e;
+  background: white;
+  cursor: pointer;
+}
+
+.auction-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+}

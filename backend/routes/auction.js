@@ -1,0 +1,37 @@
+const express = require("express");
+const router = express.Router();
+const pool = require("../db"); // pg connection ของคุณ
+
+// ดึงรายการประมูลทั้งหมด
+router.get("/", async (req, res) => {
+  try {
+    const { search, category } = req.query;
+
+    let query = `
+      SELECT * FROM auctions
+      WHERE status = 'active'
+    `;
+
+    let values = [];
+
+    if (search) {
+      values.push(`%${search}%`);
+      query += ` AND title ILIKE $${values.length}`;
+    }
+
+    if (category) {
+      values.push(category);
+      query += ` AND category = $${values.length}`;
+    }
+
+    query += " ORDER BY created_at DESC";
+
+    const result = await pool.query(query, values);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+module.exports = router;
