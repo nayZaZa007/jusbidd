@@ -13,18 +13,11 @@ function PrivateRoute({ children }) {
 export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/home" replace />} />
+      <Route path="/" element={<Home />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      <Route
-        path="/home"
-        element={
-          <PrivateRoute>
-            <Home />
-          </PrivateRoute>
-        }
-      />
+      <Route path="/home" element={<Home />} />
 
       <Route
         path="/seller"

@@ -31,3 +31,47 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 25px;
 }
+
+.home-container {
+  padding: 40px;
+  background: #dce7f2;
+  min-height: 100vh;
+}
+
+.home-title {
+  text-align: center;
+  font-size: 42px;
+  color: #1e3a5f;
+  margin-bottom: 30px;
+}
+
+.category-section {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 40px;
+}
+
+.category {
+  padding: 8px 20px;
+  border: 1px solid #1e3a5f;
+  background: white;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.category.active {
+  background: #1e3a5f;
+  color: white;
+}
+
+.auction-header {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+.auction-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
+}

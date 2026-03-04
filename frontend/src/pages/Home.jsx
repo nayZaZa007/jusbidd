@@ -6,57 +6,45 @@ import "./Home.css";
 
 export default function Home() {
   const [auctions, setAuctions] = useState([]);
-  const [search, setSearch] = useState("");
-  const [category, setCategory] = useState("");
+
+  useEffect(() => {
+    fetchAuctions();
+  }, []);
 
   const fetchAuctions = async () => {
     try {
-      const res = await api.get("/auctions", {
-        params: { search, category }
-      });
+      const res = await api.get("/auctions");
       setAuctions(res.data);
     } catch (err) {
       console.error(err);
     }
   };
 
-  useEffect(() => {
-    fetchAuctions();
-  }, [search, category]);
-
   return (
     <>
-      <Navbar onSearch={setSearch} />
+      <Navbar />
 
       <div className="home-container">
-
+        {/* ชื่อกลางหน้า */}
         <h1 className="home-title">Jus(tice) Bid</h1>
 
-        <div className="categories">
-          {[
-            "ของสะสม",
-            "อิเล็กทรอนิกส์",
-            "แฟชั่น",
-            "ศิลปะ",
-            "ของเก่า"
-          ].map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setCategory(cat)}
-            >
-              {cat}
-            </button>
-          ))}
+        {/* หมวดหมู่ */}
+        <div className="category-section">
+          <button className="category active">ของสะสม</button>
+          <button className="category">อิเล็กทรอนิกส์</button>
+          <button className="category">แฟชั่น</button>
+          <button className="category">ศิลปะ</button>
+          <button className="category">ยานพาหนะ</button>
         </div>
 
-        <h2 className="section-title">รายการประมูล</h2>
+        {/* รายการประมูล */}
+        <h2 className="auction-header">รายการประมูล</h2>
 
         <div className="auction-grid">
           {auctions.map((item) => (
             <AuctionCard key={item.id} item={item} />
           ))}
         </div>
-
       </div>
     </>
   );

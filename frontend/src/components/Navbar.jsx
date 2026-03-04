@@ -1,35 +1,51 @@
 import { useNavigate } from "react-router-dom";
+import "./Navbar.css";
 import logo from "../assets/logo.png";
-/*import "./Navbar.css";*/
 
-export default function Navbar({ onSearch }) {
+export default function Navbar() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    navigate("/");
+  };
+
   return (
     <div className="navbar">
-      <div className="nav-left">
+      {/* LEFT LOGO */}
+      <div className="nav-left" onClick={() => navigate("/")}>
         <img src={logo} alt="logo" className="nav-logo" />
-        <span onClick={() => navigate("/home")}>หน้าแรก</span>
-        <span>ค้นหาสินค้า</span>
       </div>
 
-      <div className="nav-search">
-        <input
-          type="text"
-          placeholder="ค้นหา..."
-          onChange={(e) => onSearch(e.target.value)}
-        />
+      {/* CENTER SEARCH */}
+      <div className="nav-center">
+        <input type="text" placeholder="ค้นหาสินค้า..." />
       </div>
 
+      {/* RIGHT BUTTONS */}
       <div className="nav-right">
-        {!token && (
+        {!token ? (
           <>
-            <button onClick={() => navigate("/")}>ลงชื่อเข้าใช้</button>
-            <button onClick={() => navigate("/register")}>
+            <button
+              className="btn-outline"
+              onClick={() => navigate("/login")}
+            >
+              ลงชื่อเข้าใช้
+            </button>
+
+            <button
+              className="btn-fill"
+              onClick={() => navigate("/register")}
+            >
               สมัครสมาชิก
             </button>
           </>
+        ) : (
+          <button className="btn-fill" onClick={handleLogout}>
+            ออกจากระบบ
+          </button>
         )}
       </div>
     </div>
