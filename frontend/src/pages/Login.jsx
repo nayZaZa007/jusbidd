@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FaUser, FaLock } from "react-icons/fa";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import "./Login.css";
+import "./CSS/Login.css";
 import logo from "../assets/logo.png";
 import api from "../api";
 
@@ -17,7 +17,7 @@ export default function Login() {
     let errors = {};
 
     if (!form.username) {
-      errors.username = "โปรดกรอกอีเมลของคุณ";
+      errors.username = "โปรดกรอกชื่อผู้ใช้ของคุณ";
     }
 
     if (!form.password) {
@@ -38,10 +38,11 @@ export default function Login() {
 
       localStorage.setItem("token", token);
       localStorage.setItem("userId", id);
+      localStorage.setItem("role", role);
 
-      if (role === "seller") navigate("/seller");
-      else if (role === "admin") navigate("/admin");
-      else navigate("/home");
+      if (role === "seller") navigate("/home-seller");
+      else if (role === "admin") navigate("/home-admin");
+      else navigate("/home-bidder");
 
     } catch (err) {
       setServerError(

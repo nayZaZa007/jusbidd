@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const pool = require("../db"); // pg connection ของคุณ
+const pool = require("../db");
+const { authenticate } = require("../auth");
 
 // ดึงรายการประมูลทั้งหมด
 router.get("/", async (req, res) => {
@@ -27,6 +28,16 @@ router.get("/", async (req, res) => {
     query += " ORDER BY created_at DESC";
 
     const result = await pool.query(query, values);
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server Error" });
+  }
+});
+
+router.get("/my-bids", authenticate, async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM bids WHERE user_id = $1", [req.userId]);
     res.json(result.rows);
   } catch (err) {
     console.error(err);

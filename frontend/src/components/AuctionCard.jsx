@@ -1,4 +1,4 @@
-import "./AuctionCard.css";
+import "../pages/CSS/AuctionCard.css";
 
 export default function AuctionCard({ item }) {
   return (
@@ -7,7 +7,7 @@ export default function AuctionCard({ item }) {
 
       <div className="card-overlay">
         <h3>{item.title}</h3>
-        <p>ราคาเปิด {item.startPrice} บาท</p>
+        <p>ราคาเปิด {item.starting_price} บาท</p>
         <button>เริ่มประมูล</button>
       </div>
     </div>

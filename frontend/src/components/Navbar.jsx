@@ -1,10 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import "./Navbar.css";
+import { useState } from "react";
+import { FaUserCircle } from "react-icons/fa";
+import "../pages/CSS/Navbar.css";
 import logo from "../assets/logo.png";
 
 export default function Navbar() {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
+  const [openMenu, setOpenMenu] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -14,6 +18,7 @@ export default function Navbar() {
 
   return (
     <div className="navbar">
+
       {/* LEFT LOGO */}
       <div className="nav-left" onClick={() => navigate("/")}>
         <img src={logo} alt="logo" className="nav-logo" />
@@ -26,6 +31,7 @@ export default function Navbar() {
 
       {/* RIGHT BUTTONS */}
       <div className="nav-right">
+
         {!token ? (
           <>
             <button
@@ -43,10 +49,32 @@ export default function Navbar() {
             </button>
           </>
         ) : (
-          <button className="btn-fill" onClick={handleLogout}>
-            ออกจากระบบ
-          </button>
+          <div className="profile-wrapper">
+
+            {/* PROFILE ICON */}
+            <div
+              className="profile-icon"
+              onClick={() => setOpenMenu(!openMenu)}
+            >
+              <FaUserCircle />
+            </div>
+
+            {/* DROPDOWN */}
+            {openMenu && (
+              <div className="profile-menu">
+                <div onClick={() => navigate("/profile")}>
+                  โปรไฟล์
+                </div>
+
+                <div onClick={handleLogout}>
+                  ออกจากระบบ
+                </div>
+              </div>
+            )}
+
+          </div>
         )}
+
       </div>
     </div>
   );
