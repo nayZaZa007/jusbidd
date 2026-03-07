@@ -16,20 +16,6 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert bidder account
--- Password: password123 (hashed with bcrypt, rounds: 10)
--- Username: bidder1
--- Display Name: Bidder User
-email, password, role_id) 
-VALUES (
-  'Bidder User', 
-  'bidder1',
-  'bidder1@example.com',r', 
-  'bidder1', 
-  '$2b$10$7vEnHYc0V01v.0V5d1xZ7OuXF0xFHEj.8gHlbJrFJuWMaLJLe4RWC',
-  (SELECT id FROM roles WHERE name='bidder')
-);
-
 CREATE TABLE IF NOT EXISTS auctions (
   id SERIAL PRIMARY KEY,
   title VARCHAR(255),
@@ -39,4 +25,12 @@ CREATE TABLE IF NOT EXISTS auctions (
   category VARCHAR(100),
   status VARCHAR(50) DEFAULT 'active',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE bids (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER REFERENCES users(id),
+  auction_id INTEGER REFERENCES auctions(id),
+  bid_amount INTEGER,
+  bid_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

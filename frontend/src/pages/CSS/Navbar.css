@@ -59,3 +59,32 @@
 .btn-fill:hover {
   background: #16304d;
 }
+
+.profile-wrapper{
+  position:relative;
+}
+
+.profile-icon{
+  font-size:32px;
+  cursor:pointer;
+  color:#2c5c8a;
+}
+
+.profile-menu{
+  position:absolute;
+  right:0;
+  top:40px;
+  background:white;
+  border-radius:8px;
+  box-shadow:0 2px 10px rgba(0,0,0,0.2);
+  overflow:hidden;
+}
+
+.profile-menu div{
+  padding:10px 20px;
+  cursor:pointer;
+}
+
+.profile-menu div:hover{
+  background:#f0f0f0;
+}

@@ -1,0 +1,43 @@
+.profile-header{
+  text-align:center;
+  padding:40px;
+  background:#cfe1f2;
+}
+
+.avatar{
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:40px;
+  margin:auto;
+}
+
+.profile-container{
+  padding:40px;
+}
+
+.auction-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:20px;
+}
+
+.auction-card{
+  background:white;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.auction-card img{
+  width:100%;
+}
+
+.card-info{
+  background:#0c3c73;
+  color:white;
+  padding:10px;
+}

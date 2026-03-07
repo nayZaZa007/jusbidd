@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import AuctionCard from "../components/AuctionCard";
-import "./Home.css";
+import "./CSS/Home.css";
 
-export default function Home() {
+export default function HomeBidder() {
   const [auctions, setAuctions] = useState([]);
 
   useEffect(() => {
