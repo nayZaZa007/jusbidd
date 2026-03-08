@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import Navbar from "../components/Navbar";
 import AuctionCard from "../components/AuctionCard";
+import FloatingChat from "../components/FloatingChat";
 import "./CSS/Home.css";
 
 export default function HomeSeller() {
@@ -41,9 +42,15 @@ export default function HomeSeller() {
         <h2 className="auction-header">รายการประมูล</h2>
 
         <div className="auction-grid">
-          {auctions.map((item) => (
-            <AuctionCard key={item.id} item={item} />
-          ))}
+          {auctions
+            .filter((item) => {
+              const now = new Date();
+              const start = new Date(item.start_time);
+              return now >= start;
+            })
+            .map((item) => (
+              <AuctionCard key={item.id} item={item} />
+            ))}
         </div>
 
       </div>
@@ -55,6 +62,8 @@ export default function HomeSeller() {
       >
         +
       </button>
+
+      <FloatingChat />
     </>
   );
 }

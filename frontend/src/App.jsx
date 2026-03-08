@@ -7,9 +7,10 @@ import HomeAdmin from "./pages/HomeAdmin";
 import ProfileBidder from "./pages/ProfileBidder";
 import ProfileSeller from "./pages/ProfileSeller";
 import CreateAuction from "./pages/CreateAuction";
+import Chat from "./pages/Chat";
 
 function PrivateRoute({ children }) {
-  const token = localStorage.getItem("token");
+  const token = sessionStorage.getItem("token");
   return token ? children : <Navigate to="/home-bidder" replace />;
 }
 
@@ -29,6 +30,7 @@ export default function App() {
       <Route path="/profile" element={<ProfileBidder />} />
       <Route path="/profile-seller" element={<ProfileSeller />} />
       <Route path="/create-auction" element={<PrivateRoute><CreateAuction /></PrivateRoute>} />
+      <Route path="/chat/:auctionId/:otherUserId" element={<PrivateRoute><Chat /></PrivateRoute>} />
     </Routes>
   );
 }

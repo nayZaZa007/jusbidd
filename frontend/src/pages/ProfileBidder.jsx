@@ -2,12 +2,14 @@ import { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import api from "../api";
 import Navbar from "../components/Navbar";
+import AuctionCard from "../components/AuctionCard";
 import "./CSS/ProfileBidder.css";
 
 export default function Profile() {
 
   const [user, setUser] = useState({ display_name: "", email: "" });
   const [bids, setBids] = useState([]);
+  const [wonAuctions, setWonAuctions] = useState([]);
 
   const [showEdit, setShowEdit] = useState(false);
   const [form, setForm] = useState({
@@ -22,6 +24,7 @@ export default function Profile() {
   useEffect(() => {
     fetchUser();
     fetchBids();
+    fetchWonAuctions();
   }, []);
 
   const fetchUser = async () => {
@@ -43,8 +46,17 @@ export default function Profile() {
 
   const fetchBids = async () => {
     try {
-      const res = await api.get("/my-bids");
+      const res = await api.get("/auctions/my-bids");
       setBids(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const fetchWonAuctions = async () => {
+    try {
+      const res = await api.get("/auctions/my-wins");
+      setWonAuctions(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -114,23 +126,34 @@ export default function Profile() {
 
       <div className="profile-container">
 
-        <h3>ประวัติการประมูล</h3>
+        <h3>รายการที่ประมูลชนะ</h3>
 
         <div className="auction-grid">
+          {wonAuctions.length > 0 ? (
+            wonAuctions.map((item) => (
+              <AuctionCard key={item.id} item={item} />
+            ))
+          ) : (
+            <p>ยังไม่มีรายการที่ชนะ</p>
+          )}
+        </div>
 
-          {bids.map((item) => (
-            <div key={item.id} className="auction-card">
+        <h3 style={{ marginTop: 30 }}>ประวัติการประมูล</h3>
 
-              <img src={item.image_url} />
-
-              <div className="card-info">
-                <p>{item.title}</p>
-                <p>ราคาที่ประมูล {item.price}</p>
+        <div className="auction-grid">
+          {bids.length > 0 ? (
+            bids.map((bid) => (
+              <div key={bid.id} className="auction-card">
+                <img src={bid.image} alt={bid.title} />
+                <div className="card-info">
+                  <p>{bid.title}</p>
+                  <p>ราคาที่ประมูล {bid.bid_amount} บาท</p>
+                </div>
               </div>
-
-            </div>
-          ))}
-
+            ))
+          ) : (
+            <p>ยังไม่มีประวัติ</p>
+          )}
         </div>
 
       </div>
