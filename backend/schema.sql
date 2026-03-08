@@ -24,6 +24,10 @@ CREATE TABLE IF NOT EXISTS auctions (
   starting_price INTEGER,
   category VARCHAR(100),
   status VARCHAR(50) DEFAULT 'active',
+  seller_id INTEGER REFERENCES users(id),
+  bid_increment INTEGER DEFAULT 100,
+  start_time TIMESTAMP,
+  end_time TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

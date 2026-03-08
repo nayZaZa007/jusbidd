@@ -1,9 +1,11 @@
 .card {
-  position: relative;
   border-radius: 15px;
   overflow: hidden;
   background: white;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .card img {
@@ -12,22 +14,75 @@
   object-fit: cover;
 }
 
-.card-overlay {
-  position: absolute;
-  bottom: 0;
-  width: 100%;
-  background: rgba(15, 45, 80, 0.8);
-  color: white;
+.card-content {
+  display: flex;
   padding: 15px;
+  gap: 15px;
+  flex: 1;
+  background: rgba(15, 45, 80, 0.95);
+  color: white;
 }
 
-.card-overlay button {
-  margin-top: 10px;
-  width: 70%;
+.card-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.card-left h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: white;
+}
+
+.card-left .price {
+  margin: 0 0 10px 0;
+  font-size: 14px;
+  color: #e0e0e0;
+}
+
+.bid-btn {
+  width: 100%;
   padding: 8px;
   background: white;
   color: #1e3a5f;
   border: none;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
+  transition: background 0.3s;
+}
+
+.bid-btn:hover {
+  background: #f0f0f0;
+}
+
+.card-right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-width: 120px;
+}
+
+.start-time {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  text-align: right;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.start-time .label {
+  margin: 0;
+  font-size: 12px;
+  color: #b0b0b0;
+  text-transform: uppercase;
+}
+
+.start-time .time {
+  margin: 5px 0 0 0;
+  font-size: 13px;
+  color: white;
+  font-weight: 600;
 }

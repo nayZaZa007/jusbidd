@@ -2,12 +2,12 @@ import { useEffect, useState } from "react";
 import { FaUser } from "react-icons/fa";
 import api from "../api";
 import Navbar from "../components/Navbar";
-import "./CSS/ProfileBidder.css";
+import "./CSS/ProfileSeller.css";
 
-export default function Profile() {
+export default function ProfileSeller() {
 
   const [user, setUser] = useState({ display_name: "", email: "" });
-  const [bids, setBids] = useState([]);
+  const [listings, setListings] = useState([]);
 
   const [showEdit, setShowEdit] = useState(false);
   const [form, setForm] = useState({
@@ -21,7 +21,7 @@ export default function Profile() {
 
   useEffect(() => {
     fetchUser();
-    fetchBids();
+    fetchListings();
   }, []);
 
   const fetchUser = async () => {
@@ -41,10 +41,10 @@ export default function Profile() {
     }
   };
 
-  const fetchBids = async () => {
+  const fetchListings = async () => {
     try {
-      const res = await api.get("/my-bids");
-      setBids(res.data);
+      const res = await api.get("/my-listings");
+      setListings(res.data);
     } catch (err) {
       console.error(err);
     }
@@ -101,7 +101,7 @@ export default function Profile() {
 
         <h2>{user.display_name}</h2>
 
-        <p>จำนวนการประมูล: {bids.length}</p>
+        <p>จำนวนรายการขาย: {listings.length}</p>
 
         <button
           className="edit-btn"
@@ -114,18 +114,18 @@ export default function Profile() {
 
       <div className="profile-container">
 
-        <h3>ประวัติการประมูล</h3>
+        <h3>รายการขายของคุณ</h3>
 
         <div className="auction-grid">
 
-          {bids.map((item) => (
+          {listings.map((item) => (
             <div key={item.id} className="auction-card">
 
-              <img src={item.image_url} />
+              <img src={item.image} alt={item.title} />
 
               <div className="card-info">
                 <p>{item.title}</p>
-                <p>ราคาที่ประมูล {item.price}</p>
+                <p>ราคาเปิด {item.starting_price} บาท</p>
               </div>
 
             </div>
