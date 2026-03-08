@@ -9,77 +9,82 @@ const app = express();
 app.use(cors());
 app.use(express.json({ limit: '10mb' })); // allow larger payloads for image uploads
 
-// Email verification utils
-const { sendVerificationEmail } = require("./emailUtils");
-const crypto = require("crypto");
-
 // REGISTER
 app.post("/register", async (req, res) => {
   try {
     const { display_name, username, email, password, confirm_password, role } = req.body;
 
     if (!display_name || !username || !email || !password || !confirm_password) {
-      return res.status(400).json({ success: false, message: "กรุณากรอกข้อมูลให้ครบ" });
+      return res.status(400).json({
+        success: false,
+        message: "กรุณากรอกข้อมูลให้ครบ"
+      });
     }
+
     if (password !== confirm_password) {
-      return res.status(400).json({ success: false, message: "รหัสผ่านไม่ตรงกัน" });
+      return res.status(400).json({
+        success: false,
+        message: "รหัสผ่านไม่ตรงกัน"
+      });
     }
+
     // เช็ค username / email ซ้ำ
     const checkUser = await pool.query(
       "SELECT * FROM users WHERE username=$1 OR email=$2",
       [username, email]
     );
+
     if (checkUser.rows.length > 0) {
-      return res.status(400).json({ success: false, message: "Username หรือ Email ถูกใช้งานแล้ว" });
+      return res.status(400).json({
+        success: false,
+        message: "Username หรือ Email ถูกใช้งานแล้ว"
+      });
     }
 
     // Email syntax check (simple)
     const emailPattern = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
     if (!emailPattern.test(email)) {
-      return res.status(400).json({ success: false, message: "รูปแบบอีเมลไม่ถูกต้อง" });
+      return res.status(400).json({
+        success: false,
+        message: "รูปแบบอีเมลไม่ถูกต้อง"
+      });
     }
-
-    // Generate verification token
-    const verifyToken = crypto.randomBytes(32).toString("hex");
 
     const hash = await bcrypt.hash(password, 10);
-    const roleRes = await pool.query("SELECT id FROM roles WHERE name=$1", [role]);
-    if (roleRes.rows.length === 0) {
-      return res.status(400).json({ success: false, message: "บทบาทไม่ถูกต้อง" });
-    }
-    const roleId = roleRes.rows[0].id;
 
-    // Insert user with verified=false and token
-    await pool.query(
-      "INSERT INTO users (display_name, username, email, password, role_id, verified, verify_token) VALUES ($1,$2,$3,$4,$5,$6,$7)",
-      [display_name, username, email, hash, roleId, false, verifyToken]
+    const roleRes = await pool.query(
+      "SELECT id FROM roles WHERE name=$1",
+      [role]
     );
 
-    // Send verification email
-    await sendVerificationEmail(email, verifyToken);
+    if (roleRes.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "บทบาทไม่ถูกต้อง"
+      });
+    }
+
+    const roleId = roleRes.rows[0].id;
+
+    await pool.query(
+      "INSERT INTO users (display_name, username, email, password, role_id) VALUES ($1,$2,$3,$4,$5)",
+      [display_name, username, email, hash, roleId]
+    );
 
     res.json({
       success: true,
-      message: "สมัครสมาชิกสำเร็จ กรุณายืนยันอีเมลของคุณ"
+      message: "สมัครสมาชิกสำเร็จ"
     });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, message: "Server error" });
-  }
-});
 
-// VERIFY EMAIL
-app.get("/verify-email", async (req, res) => {
-  const { token } = req.query;
-  if (!token) return res.status(400).send("Missing token");
-  try {
-    const result = await pool.query("UPDATE users SET verified=true, verify_token=null WHERE verify_token=$1 RETURNING *", [token]);
-    if (result.rowCount === 0) {
-      return res.status(400).send("Token ไม่ถูกต้องหรือหมดอายุ");
-    }
-    res.send("อีเมลของคุณได้รับการยืนยันแล้ว สามารถเข้าสู่ระบบได้");
   } catch (err) {
-    res.status(500).send("Server error");
+
+    console.error(err);
+
+    res.status(500).json({
+      success: false,
+      message: "Server error"
+    });
+
   }
 });
 
