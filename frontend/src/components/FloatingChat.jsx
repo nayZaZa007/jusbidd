@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { FaUser, FaComments, FaTimes, FaMinus, FaExpand, FaCompress, FaImage } from "react-icons/fa";
 import api from "../api";
-import "./CSS/FloatingChat.css";
+import "../pages/CSS/FloatingChat.css";
 
 export default function FloatingChat() {
   const [open, setOpen] = useState(false);
