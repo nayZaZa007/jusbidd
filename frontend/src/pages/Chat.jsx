@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { FaUser, FaImage, FaCamera } from "react-icons/fa";
+import { FaUser, FaImage } from "react-icons/fa";
 import api from "../api";
 import "./CSS/Chat.css";
 
@@ -12,6 +12,7 @@ export default function Chat() {
   const [otherUser, setOtherUser] = useState({});
   const [auction, setAuction] = useState({});
   const messagesEndRef = useRef(null);
+  const imageInputRef = useRef(null);
   const myId = sessionStorage.getItem("userId");
 
   useEffect(() => {
@@ -75,8 +76,38 @@ export default function Chat() {
     }
   };
 
+  const handleImageSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        await api.post("/messages", {
+          auction_id: Number(auctionId),
+          receiver_id: Number(otherUserId),
+          content: "",
+          image: reader.result
+        });
+        fetchMessages();
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
   return (
     <div className="chat-page">
+      {/* Hidden file input */}
+      <input
+        type="file"
+        accept="image/*"
+        ref={imageInputRef}
+        style={{ display: "none" }}
+        onChange={handleImageSelect}
+      />
+
       {/* Header */}
       <div className="chat-header">
         <div className="chat-header-left">
@@ -100,7 +131,10 @@ export default function Chat() {
                 </div>
               )}
               <div className={`chat-bubble ${isMine ? "mine" : "theirs"}`}>
-                {msg.content}
+                {msg.image && (
+                  <img src={msg.image} alt="sent" className="chat-msg-image" />
+                )}
+                {msg.content && <span>{msg.content}</span>}
               </div>
               {isMine && (
                 <div className="chat-msg-avatar">
@@ -124,8 +158,7 @@ export default function Chat() {
           rows={1}
         />
         <div className="chat-input-icons">
-          <FaImage className="chat-icon" />
-          <FaCamera className="chat-icon" />
+          <FaImage className="chat-icon" onClick={() => imageInputRef.current?.click()} />
         </div>
       </div>
     </div>

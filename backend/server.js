@@ -7,7 +7,7 @@ const { authenticate, SECRET } = require("./auth");
 
 const app = express();
 app.use(cors());
-app.use(express.json({ limit: '10mb' })); // allow larger payloads for image uploads
+app.use(express.json({ limit: '20mb' })); // allow larger payloads for image uploads
 
 // GET USER BY ID
 app.get("/users/:id", async (req, res) => {
@@ -242,13 +242,16 @@ app.use("/auctions", auctionRoutes);
 // Send a message
 app.post("/messages", authenticate, async (req, res) => {
   try {
-    const { auction_id, receiver_id, content } = req.body;
-    if (!auction_id || !receiver_id || !content || !content.trim()) {
+    const { auction_id, receiver_id, content, image } = req.body;
+    if (!auction_id || !receiver_id) {
+      return res.status(400).json({ message: "ข้อมูลไม่ครบ" });
+    }
+    if ((!content || !content.trim()) && !image) {
       return res.status(400).json({ message: "ข้อมูลไม่ครบ" });
     }
     const result = await pool.query(
-      "INSERT INTO messages (auction_id, sender_id, receiver_id, content) VALUES ($1, $2, $3, $4) RETURNING *",
-      [auction_id, req.userId, receiver_id, content.trim()]
+      "INSERT INTO messages (auction_id, sender_id, receiver_id, content, image) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [auction_id, req.userId, receiver_id, content ? content.trim() : '', image || null]
     );
     res.status(201).json(result.rows[0]);
   } catch (err) {

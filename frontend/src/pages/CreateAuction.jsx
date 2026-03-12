@@ -232,11 +232,19 @@ export default function CreateAuction(){
 
             <div className="box">
               <label>หมวดหมู่</label>
-              <input
+              <select
                 name="category"
                 value={form.category}
                 onChange={handleChange}
-              />
+                className="category-select"
+              >
+                <option value="">-- เลือกหมวดหมู่ --</option>
+                <option value="ของสะสม">ของสะสม</option>
+                <option value="อิเล็กทรอนิกส์">อิเล็กทรอนิกส์</option>
+                <option value="แฟชั่น">แฟชั่น</option>
+                <option value="ศิลปะ">ศิลปะ</option>
+                <option value="ยานพาหนะ">ยานพาหนะ</option>
+              </select>
               {errors.category && <p className="error">{errors.category}</p>}
             </div>
 

@@ -76,7 +76,23 @@ router.get("/my-wins", authenticate, async (req, res) => {
 
 router.get("/my-listings", authenticate, async (req, res) => {
   try {
-    const result = await pool.query("SELECT * FROM auctions WHERE seller_id = $1", [req.userId]);
+    const { search, category } = req.query;
+    let query = "SELECT * FROM auctions WHERE seller_id = $1";
+    let values = [req.userId];
+
+    if (search) {
+      values.push(`%${search}%`);
+      query += ` AND title ILIKE $${values.length}`;
+    }
+
+    if (category) {
+      values.push(category);
+      query += ` AND category = $${values.length}`;
+    }
+
+    query += " ORDER BY created_at DESC";
+
+    const result = await pool.query(query, values);
     res.json(result.rows);
   } catch (err) {
     console.error(err);

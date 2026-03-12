@@ -1,15 +1,18 @@
 import { useEffect, useState, useRef } from "react";
-import { FaUser, FaComments, FaTimes } from "react-icons/fa";
+import { FaUser, FaComments, FaTimes, FaMinus, FaExpand, FaCompress, FaImage } from "react-icons/fa";
 import api from "../api";
 import "./CSS/FloatingChat.css";
 
 export default function FloatingChat() {
   const [open, setOpen] = useState(false);
+  const [minimized, setMinimized] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const [conversations, setConversations] = useState([]);
-  const [activeConv, setActiveConv] = useState(null); // { auctionId, otherUserId, otherUserName }
+  const [activeConv, setActiveConv] = useState(null);
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState("");
   const messagesEndRef = useRef(null);
+  const imageInputRef = useRef(null);
   const myId = sessionStorage.getItem("userId");
 
   useEffect(() => {
@@ -66,6 +69,27 @@ export default function FloatingChat() {
     }
   };
 
+  const handleImageSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !activeConv) return;
+    const reader = new FileReader();
+    reader.onload = async () => {
+      try {
+        await api.post("/messages", {
+          auction_id: Number(activeConv.auctionId),
+          receiver_id: Number(activeConv.otherUserId),
+          content: "",
+          image: reader.result
+        });
+        fetchMessages();
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
   const handleKeyDown = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -73,20 +97,50 @@ export default function FloatingChat() {
     }
   };
 
+  const panelClass = [
+    "floating-chat-panel",
+    minimized ? "fc-minimized" : "",
+    expanded ? "fc-expanded" : ""
+  ].filter(Boolean).join(" ");
+
   return (
     <>
       {/* Floating button */}
-      <div className="floating-chat-btn" onClick={() => setOpen(!open)}>
-        {open ? <FaTimes /> : <FaComments />}
-      </div>
+      {!expanded && (
+        <div className="floating-chat-btn" onClick={() => setOpen(!open)}>
+          {open ? <FaTimes /> : <FaComments />}
+        </div>
+      )}
+
+      {/* Hidden file input for images */}
+      <input
+        type="file"
+        accept="image/*"
+        ref={imageInputRef}
+        style={{ display: "none" }}
+        onChange={handleImageSelect}
+      />
 
       {/* Chat panel */}
       {open && (
-        <div className="floating-chat-panel">
+        <div className={panelClass}>
           {!activeConv ? (
             <>
               <div className="fc-header">
-                <span>ข้อความ</span>
+                <span className="fc-header-title">ข้อความ</span>
+                <div className="fc-header-actions">
+                  <button className="fc-header-btn" onClick={() => setMinimized(!minimized)} title={minimized ? "ขยาย" : "ย่อ"}>
+                    {minimized ? <FaExpand /> : <FaMinus />}
+                  </button>
+                  <button className="fc-header-btn" onClick={() => { setExpanded(!expanded); setMinimized(false); }} title={expanded ? "ย่อหน้าต่าง" : "ขยายเต็มจอ"}>
+                    {expanded ? <FaCompress /> : <FaExpand />}
+                  </button>
+                  {expanded && (
+                    <button className="fc-header-btn" onClick={() => { setOpen(false); setExpanded(false); }} title="ปิด">
+                      <FaTimes />
+                    </button>
+                  )}
+                </div>
               </div>
               <div className="fc-conv-list">
                 {conversations.length === 0 && (
@@ -119,8 +173,26 @@ export default function FloatingChat() {
           ) : (
             <>
               <div className="fc-header">
-                <span className="fc-back" onClick={() => { setActiveConv(null); setMessages([]); }}>←</span>
-                <span>{activeConv.otherUserName}</span>
+                {expanded ? (
+                  <>
+                    <div className="fc-header-avatar"><FaUser /></div>
+                    <span className="fc-header-title">{activeConv.otherUserName}</span>
+                    <span className="fc-header-arrow" onClick={() => { setExpanded(false); setOpen(false); setActiveConv(null); setMessages([]); }}>›</span>
+                  </>
+                ) : (
+                  <>
+                    <span className="fc-back" onClick={() => { setActiveConv(null); setMessages([]); }}>←</span>
+                    <span className="fc-header-title">{activeConv.otherUserName}</span>
+                    <div className="fc-header-actions">
+                      <button className="fc-header-btn" onClick={() => setMinimized(!minimized)} title={minimized ? "ขยาย" : "ย่อ"}>
+                        {minimized ? <FaExpand /> : <FaMinus />}
+                      </button>
+                      <button className="fc-header-btn" onClick={() => { setExpanded(true); setMinimized(false); }} title="ขยายเต็มจอ">
+                        <FaExpand />
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
               <div className="fc-messages">
                 {messages.map((msg) => {
@@ -131,7 +203,10 @@ export default function FloatingChat() {
                         <div className="fc-msg-avatar"><FaUser /></div>
                       )}
                       <div className={`fc-bubble ${isMine ? "mine" : "theirs"}`}>
-                        {msg.content}
+                        {msg.image && (
+                          <img src={msg.image} alt="sent" className="fc-msg-image" />
+                        )}
+                        {msg.content && <span>{msg.content}</span>}
                       </div>
                       {isMine && (
                         <div className="fc-msg-avatar"><FaUser /></div>
@@ -142,14 +217,25 @@ export default function FloatingChat() {
                 <div ref={messagesEndRef} />
               </div>
               <div className="fc-input-bar">
+                {!expanded && (
+                  <button className="fc-image-btn" onClick={() => imageInputRef.current?.click()} title="ส่งรูปภาพ">
+                    <FaImage />
+                  </button>
+                )}
                 <input
                   className="fc-input"
-                  placeholder="ส่งข้อความ..."
+                  placeholder="ส่งข้อความ....."
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
                   onKeyDown={handleKeyDown}
                 />
-                <button className="fc-send" onClick={sendMessage}>ส่ง</button>
+                {expanded ? (
+                  <button className="fc-image-btn" onClick={() => imageInputRef.current?.click()} title="ส่งรูปภาพ">
+                    <FaImage />
+                  </button>
+                ) : (
+                  <button className="fc-send" onClick={sendMessage}>ส่ง</button>
+                )}
               </div>
             </>
           )}

@@ -52,5 +52,6 @@ CREATE TABLE messages (
   sender_id INTEGER REFERENCES users(id),
   receiver_id INTEGER REFERENCES users(id),
   content TEXT NOT NULL,
+  image TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

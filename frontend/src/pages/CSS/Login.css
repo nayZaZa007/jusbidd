@@ -183,12 +183,22 @@ body {
 }
 
 .input-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
   margin-right: 15px;
   color: #1b3c6b;
+  font-size: 18px;
 }
 
 .toggle-password {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
   cursor: pointer;
+  font-size: 18px;
   color: #5f5f5f;
 }
 

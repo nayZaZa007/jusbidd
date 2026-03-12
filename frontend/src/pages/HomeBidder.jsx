@@ -4,40 +4,52 @@ import Navbar from "../components/Navbar";
 import AuctionCard from "../components/AuctionCard";
 import "./CSS/Home.css";
 
+const CATEGORIES = ["ของสะสม", "อิเล็กทรอนิกส์", "แฟชั่น", "ศิลปะ", "ยานพาหนะ"];
+
 export default function HomeBidder() {
   const [auctions, setAuctions] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchAuctions();
-  }, []);
+  }, [selectedCategory, searchQuery]);
 
   const fetchAuctions = async () => {
     try {
-      const res = await api.get("/auctions");
+      const params = {};
+      if (searchQuery) params.search = searchQuery;
+      if (selectedCategory) params.category = selectedCategory;
+      const res = await api.get("/auctions", { params });
       setAuctions(res.data);
     } catch (err) {
       console.error(err);
     }
   };
 
+  const handleCategoryClick = (cat) => {
+    setSelectedCategory(prev => prev === cat ? "" : cat);
+  };
+
   return (
     <>
-      <Navbar />
+      <Navbar onSearch={setSearchQuery} />
 
       <div className="home-container">
-        {/* ชื่อกลางหน้า */}
         <h1 className="home-title">Jus(tice) Bid</h1>
 
-        {/* หมวดหมู่ */}
         <div className="category-section">
-          <button className="category active">ของสะสม</button>
-          <button className="category">อิเล็กทรอนิกส์</button>
-          <button className="category">แฟชั่น</button>
-          <button className="category">ศิลปะ</button>
-          <button className="category">ยานพาหนะ</button>
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              className={`category${selectedCategory === cat ? " active" : ""}`}
+              onClick={() => handleCategoryClick(cat)}
+            >
+              {cat}
+            </button>
+          ))}
         </div>
 
-        {/* รายการประมูล */}
         <h2 className="auction-header">รายการประมูล</h2>
 
         <div className="auction-grid">

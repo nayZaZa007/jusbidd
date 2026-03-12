@@ -1,15 +1,24 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { FaUserCircle } from "react-icons/fa";
+import { FaUserCircle, FaSearch } from "react-icons/fa";
 import "../pages/CSS/Navbar.css";
 import logo from "../assets/logo.png";
 
-export default function Navbar() {
+export default function Navbar({ onSearch }) {
   const navigate = useNavigate();
   const token = sessionStorage.getItem("token");
   const role = sessionStorage.getItem("role");
 
   const [openMenu, setOpenMenu] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  const handleSearch = () => {
+    if (onSearch) onSearch(searchText.trim());
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Enter") handleSearch();
+  };
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
@@ -55,7 +64,16 @@ export default function Navbar() {
 
       {/* CENTER SEARCH */}
       <div className="nav-center">
-        <input type="text" placeholder="ค้นหาสินค้า..." />
+        <input
+          type="text"
+          placeholder="ค้นหาสินค้า..."
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)}
+          onKeyDown={handleSearchKeyDown}
+        />
+        <button className="nav-search-btn" onClick={handleSearch}>
+          <FaSearch />
+        </button>
       </div>
 
       {/* RIGHT BUTTONS */}
